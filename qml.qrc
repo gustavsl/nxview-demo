@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>DigitalIn.qml</file>
+        <file>Forno.qml</file>
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>Modbus_RHT.qml</file>
+        <file>main.cpp</file>
+        <file>img/BS_Type_T_Thermocouple.svg</file>
+        <file>img/PID.svg</file>
+        <file>img/modbus-logo.png</file>
+        <file>img/rht-climate.jpg</file>
+        <file>AnalogOut.qml</file>
+    </qresource>
+</RCC>
