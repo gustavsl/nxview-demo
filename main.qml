@@ -3,8 +3,8 @@ import QtQuick.Controls 2.2
 
 ApplicationWindow {
     visible: true
-    width: 1024
-    height: 600
+    width: 800
+    height: 480
     title: qsTr("Tabs")
 
 
@@ -13,17 +13,9 @@ ApplicationWindow {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        Forno {
-            // TODO: tirar
-        }
-
         Modbus_RHT {
             // TODO: traduzir
             // TODO: adicionar MQTT para Thingsboard
-        }
-
-        AnalogOut {
-            // TODO: tirar
         }
 
         DigitalIn {
@@ -36,26 +28,26 @@ ApplicationWindow {
     footer: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex
-        height:60
-        TabButton {
-            text: qsTr("Entrada Analógica")
-            height:60
+        height:40
+//        TabButton {
+//            text: qsTr("Entrada Analógica")
+//            height:60
 
-        }
+//        }
 
         TabButton {
             text: qsTr("ModBus")
-            height:60
+            height:40
         }
 
-        TabButton {
-            text: qsTr("Saída Analógica")
-            height:60
-        }
+//        TabButton {
+//            text: qsTr("Saída Analógica")
+//            height:60
+//        }
 
         TabButton {
-            text: qsTr("Entrada Digital")
-            height:60
+            text: qsTr("Digital In")
+            height:40
         }
     }
 

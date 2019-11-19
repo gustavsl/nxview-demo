@@ -1,37 +1,79 @@
 import QtQuick 2.9
-import QtQuick.Controls 2.2
-import Modbus 1.0
+import QtQuick.Window 2.2
+import QtQuick.Controls 2.1
+import QtQuick.Layouts 1.1
+import MqttClient 1.0
 
 Page {
-    width: 1024
-    height: 500
+    property var relHum
+    property var temp
+    property var wetBulbTemp
+    property var dewPoint
+    property var mqttPort: "1883"
+
+    MqttClient {
+        id: client
+        hostname: "18.231.72.4"
+        port: mqttPort
+        username: "0LaQ0yevPDoHySsdyUCi"
+    }
+
+    width: 800
+    height: 380
 
     header: Label {
         text: qsTr("MODBUS")
-        font.pixelSize: Qt.application.font.pixelSize * 2
+        font.pixelSize: Qt.application.font.pixelSize
         padding: 10
     }
 
     Text {
-        text: qsTr("NOVUS RHT Climate")
+        text: qsTr("Simulated Modbus Device")
         font.bold: true
-        font.pixelSize: 48
+        font.pixelSize: 24
         x: 10
     }
 
-    ModbusRegisterListModel {
-        id: registerListModel
+    Button {
+        id: connectButton
+        x: 370
+        y: -5
+        text: client.state === MqttClient.Connected ? "Disconnect" : "Connect"
+        onClicked: {
+            if (client.state === MqttClient.Connected) {
+                client.disconnectFromHost()
+                messageModel.clear()
+                tempSubscription.destroy()
+                tempSubscription = 0
+            } else
+                client.connectToHost()
+        }
+    }
 
-        modbusRegisterType: ModbusRegisterListModel.Register
-        outputType: ModbusRegisterListModel.Integer32
-        registerReadAddr: 0
-        registerReadSize: 8
+    ListModel {
+        id: registerListModel
+        ListElement {
+
+        }
+        ListElement {
+
+        }
+        ListElement {
+
+        }
+        ListElement {
+
+        }
+    }
+
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
     }
 
     Component {
         id: registerDelegate
         Item {
-            width: 180; height: 100;
+            width: 180; height: 80;
             Column {
                 Rectangle {
                     id: registerName
@@ -67,25 +109,25 @@ Page {
                         }
                     }
                     radius: 10
-                    height: 90
+                    height: 70
                     width: 500
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         leftPadding: 15
                         text: if (index===0) {
-                                  '<b>Umidade relativa</b><br />' + display/10 + '%'
+                                  '<b>Relative humidity</b><br />' + relHum + '%'
                               }
                               else if (index===1){
-                                  '<b>Temperatura</b><br />' + display/10 + '°C'
+                                  '<b>Temperature</b><br />' + temp + '°C'
                               }
                               else if (index===2){
-                                  '<b>Temperatura bulbo úmido</b><br />' + display/10 + '°C'
+                                  '<b>Wet bulb temperature</b><br />' + wetBulbTemp + '°C'
                               }
                               else if (index===3){
-                                  '<b>Ponto de orvalho</b><br />' + display/10 + '°C'
+                                  '<b>Dew point</b><br />' + dewPoint + '°C'
                               }
 
-                        font.pixelSize: 32
+                        font.pixelSize: 24
 
                     }
                 }
@@ -97,7 +139,7 @@ Page {
     ListView {
         id: modbusRegisterListView
         x: 10
-        y: 80
+        y: 50
         height: 400
         model: registerListModel
         delegate: registerDelegate
@@ -105,22 +147,33 @@ Page {
 
 
     Timer {
-        interval: 1000
+        interval: 3000
         running: true
         repeat: true
-        onTriggered: registerListModel.readRegisters();
+        onTriggered: {
+            relHum = getRandomArbitrary(2,80).toFixed(2)
+            temp = getRandomArbitrary(-10,35).toFixed(2)
+            wetBulbTemp = (temp - getRandomArbitrary(2,10)).toFixed(2)
+            dewPoint = getRandomArbitrary(0,temp).toFixed(2)
+            if (client.state === MqttClient.Connected) {
+                client.publish("v1/devices/me/telemetry", "{\"relHum\":\"" + relHum + "\"}")
+                client.publish("v1/devices/me/telemetry", "{\"temp\":\"" + temp + "\"}")
+                client.publish("v1/devices/me/telemetry", "{\"wetBulbTemp\":\"" + wetBulbTemp + "\"}")
+                client.publish("v1/devices/me/telemetry", "{\"dewPoint\":\"" + dewPoint + "\"}")
+            }
+        }
     }
 
-    Image {
-        id: rhtClimate
-        source: "img/rht-climate.jpg"
-        fillMode: Image.PreserveAspectFit
-        width: 400
-        anchors.right: parent.right
-    }
+//    Image {
+//        id: rhtClimate
+//        source: "img/rht-climate.jpg"
+//        fillMode: Image.PreserveAspectFit
+//        width: 400
+//        anchors.right: parent.right
+//    }
 
-    Component.onCompleted: {
-        registerListModel.connectToSerial();
-        console.log("Serial connected!");
-    }
+//    Component.onCompleted: {
+//        registerListModel.connectToSerial();
+//        console.log("Serial connected!");
+//    }
 }

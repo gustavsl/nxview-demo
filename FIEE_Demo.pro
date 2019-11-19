@@ -1,4 +1,4 @@
-QT += quick svg printsupport
+QT += quick svg printsupport mqtt
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -15,10 +15,9 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
         fileio.cpp \
         main.cpp \
-        minipid.cpp \
-        modbusregisterlistmodel.cpp \
-        qcustomplot.cpp \
-        qmlplot.cpp
+        qmlmqttclient.cpp
+#        minipid.cpp
+#        modbusregisterlistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,12 +31,12 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+INCLUDEPATH += /usr/lib/modbus
 
-LIBS += -lmodbus -lpthread
+LIBS += -lpthread
 
 HEADERS += \
     fileio.h \
-    minipid.h \
-    modbusregisterlistmodel.h \
-    qcustomplot.h \
-    qmlplot.h
+    qmlmqttclient.h
+#    minipid.h \
+#    modbusregisterlistmodel.h

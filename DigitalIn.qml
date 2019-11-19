@@ -4,8 +4,8 @@ import FileIO 1.0
 import QtQuick.Extras 1.4
 
 Page {
-    width: 1024
-    height: 500
+    width: 800
+    height: 380
 
     FileIO {
         id: digitalIn1
@@ -35,13 +35,13 @@ Page {
     }
 
     header: Label {
-        text: qsTr("ENTRADA DIGITAL")
+        text: qsTr("DIGITAL IN")
         font.pixelSize: Qt.application.font.pixelSize * 2
         padding: 10
     }
 
     Text {
-        text: qsTr("Leitura de GPIOs")
+        text: qsTr("GPIO read")
         font.bold: true
         font.pixelSize: 48
         x: 10
