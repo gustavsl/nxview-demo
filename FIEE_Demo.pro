@@ -15,9 +15,8 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 SOURCES += \
         fileio.cpp \
         main.cpp \
+        modbusregisterlistmodel.cpp \
         qmlmqttclient.cpp
-#        minipid.cpp
-#        modbusregisterlistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -33,10 +32,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 INCLUDEPATH += /usr/lib/modbus
 
-LIBS += -lpthread
+LIBS += -lmodbus -lpthread
 
 HEADERS += \
     fileio.h \
+    modbusregisterlistmodel.h \
     qmlmqttclient.h
-#    minipid.h \
-#    modbusregisterlistmodel.h

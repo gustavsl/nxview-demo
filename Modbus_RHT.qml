@@ -3,6 +3,8 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.1
 import MqttClient 1.0
+import Modbus 1.0
+
 
 Page {
     property var relHum
@@ -13,9 +15,9 @@ Page {
 
     MqttClient {
         id: client
-        hostname: "18.231.72.4"
+        hostname: "52.67.201.215"
         port: mqttPort
-        username: "0LaQ0yevPDoHySsdyUCi"
+        username: "cox2hTvqVWTlTAqeCO89"
     }
 
     width: 800
@@ -28,7 +30,7 @@ Page {
     }
 
     Text {
-        text: qsTr("Simulated Modbus Device")
+        text: qsTr("NOVUS RHT Climate")
         font.bold: true
         font.pixelSize: 24
         x: 10
@@ -36,7 +38,7 @@ Page {
 
     Button {
         id: connectButton
-        x: 370
+        x: 300
         y: -5
         text: client.state === MqttClient.Connected ? "Disconnect" : "Connect"
         onClicked: {
@@ -50,24 +52,12 @@ Page {
         }
     }
 
-    ListModel {
+    ModbusRegisterListModel {
         id: registerListModel
-        ListElement {
-
-        }
-        ListElement {
-
-        }
-        ListElement {
-
-        }
-        ListElement {
-
-        }
-    }
-
-    function getRandomArbitrary(min, max) {
-      return Math.random() * (max - min) + min;
+        modbusRegisterType: ModbusRegisterListModel.Register
+        outputType: ModbusRegisterListModel.Integer32
+        registerReadAddr: 0
+        registerReadSize: 8
     }
 
     Component {
@@ -77,37 +67,49 @@ Page {
             Column {
                 Rectangle {
                     id: registerName
-                    gradient:
-                        Gradient {
-                        GradientStop { position: 0.0; color:
-                                if (index===0) {
-                                    "#3066BE"
-                                }
-                                else if (index===1) {
-                                    "#00FFC5"
-                                }
-                                else if (index===2) {
-                                    "#8CC7A1"
-                                }
-                                else if (index===3) {
-                                    "#F19953"
-                                }
-                        }
-                        GradientStop { position: 1.0; color:
-                                if (index===0) {
-                                    "#688FCF"
-                                }
-                                else if (index===1) {
-                                    "#5CFFDA"
-                                }
-                                else if (index===2) {
-                                    "#B5DBC3"
-                                }
-                                else if (index===3) {
-                                    "#F6BE91"
-                                }
-                        }
-                    }
+                    color: if (index===0) {
+                               "#3066BE"
+                           }
+                           else if (index===1) {
+                               "#00FFC5"
+                           }
+                           else if (index===2) {
+                               "#8CC7A1"
+                           }
+                           else if (index===3) {
+                               "#F19953"
+                           }
+//                    gradient:
+//                        Gradient {
+//                        GradientStop { position: 0.0; color:
+//                                if (index===0) {
+//                                    "#3066BE"
+//                                }
+//                                else if (index===1) {
+//                                    "#00FFC5"
+//                                }
+//                                else if (index===2) {
+//                                    "#8CC7A1"
+//                                }
+//                                else if (index===3) {
+//                                    "#F19953"
+//                                }
+//                        }
+//                        GradientStop { position: 1.0; color:
+//                                if (index===0) {
+//                                    "#688FCF"
+//                                }
+//                                else if (index===1) {
+//                                    "#5CFFDA"
+//                                }
+//                                else if (index===2) {
+//                                    "#B5DBC3"
+//                                }
+//                                else if (index===3) {
+//                                    "#F6BE91"
+//                                }
+//                        }
+//                    }
                     radius: 10
                     height: 70
                     width: 500
@@ -115,16 +117,20 @@ Page {
                         anchors.verticalCenter: parent.verticalCenter
                         leftPadding: 15
                         text: if (index===0) {
-                                  '<b>Relative humidity</b><br />' + relHum + '%'
+                                  relHum = display/10
+                                  '<b>Relative Humidity</b><br />' + relHum + '%'
                               }
                               else if (index===1){
+                                  temp = display/10
                                   '<b>Temperature</b><br />' + temp + '°C'
                               }
                               else if (index===2){
-                                  '<b>Wet bulb temperature</b><br />' + wetBulbTemp + '°C'
+                                  wetBulbTemp = display/10
+                                  '<b>Wet Bulb Temperature</b><br />' + wetBulbTemp + '°C'
                               }
                               else if (index===3){
-                                  '<b>Dew point</b><br />' + dewPoint + '°C'
+                                  dewPoint = display/10
+                                  '<b>Dew Point</b><br />' + dewPoint + '°C'
                               }
 
                         font.pixelSize: 24
@@ -147,14 +153,11 @@ Page {
 
 
     Timer {
-        interval: 3000
+        interval: 1000
         running: true
         repeat: true
         onTriggered: {
-            relHum = getRandomArbitrary(2,80).toFixed(2)
-            temp = getRandomArbitrary(-10,35).toFixed(2)
-            wetBulbTemp = (temp - getRandomArbitrary(2,10)).toFixed(2)
-            dewPoint = getRandomArbitrary(0,temp).toFixed(2)
+            onTriggered: registerListModel.readRegisters()
             if (client.state === MqttClient.Connected) {
                 client.publish("v1/devices/me/telemetry", "{\"relHum\":\"" + relHum + "\"}")
                 client.publish("v1/devices/me/telemetry", "{\"temp\":\"" + temp + "\"}")
@@ -164,16 +167,16 @@ Page {
         }
     }
 
-//    Image {
-//        id: rhtClimate
-//        source: "img/rht-climate.jpg"
-//        fillMode: Image.PreserveAspectFit
-//        width: 400
-//        anchors.right: parent.right
-//    }
+    Image {
+        id: rhtClimate
+        source: "img/rht-climate.jpg"
+        fillMode: Image.PreserveAspectFit
+        width: 280
+        anchors.right: parent.right
+    }
 
-//    Component.onCompleted: {
-//        registerListModel.connectToSerial();
-//        console.log("Serial connected!");
-//    }
+    Component.onCompleted: {
+        registerListModel.connectToSerial();
+        console.log("Serial connected!");
+    }
 }

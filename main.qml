@@ -18,10 +18,10 @@ ApplicationWindow {
             // TODO: adicionar MQTT para Thingsboard
         }
 
-        DigitalIn {
-        }
+//        DigitalIn {
+//        }
 
-        // TODO: adicionar OPC UA tank
+//        // TODO: adicionar OPC UA tank
 
     }
 
@@ -45,10 +45,10 @@ ApplicationWindow {
 //            height:60
 //        }
 
-        TabButton {
-            text: qsTr("Digital In")
-            height:40
-        }
+//        TabButton {
+//            text: qsTr("Digital In")
+//            height:40
+//        }
     }
 
 }

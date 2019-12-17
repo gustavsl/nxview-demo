@@ -3,7 +3,7 @@
 #include <QQmlApplicationEngine>
 #include <QtPrintSupport/QPrinter>
 
-//#include "modbusregisterlistmodel.h"
+#include "modbusregisterlistmodel.h"
 #include "fileio.h"
 #include <QtQuick>
 #include "qmlmqttclient.h"
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     QFont font("Frutiger", 16);
     QApplication app(argc, argv);
     app.setFont(font);
-//    qmlRegisterType<ModbusRegisterListModel>("Modbus", 1, 0, "ModbusRegisterListModel");
+    qmlRegisterType<ModbusRegisterListModel>("Modbus", 1, 0, "ModbusRegisterListModel");
     qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 
     QQmlApplicationEngine engine;

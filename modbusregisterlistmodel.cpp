@@ -72,7 +72,7 @@ bool ModbusRegisterListModel::connectToSerial()
     if (m_connected)
         disconnect();
 
-    m_modbusContext = modbus_new_rtu("/dev/ttymxc4", 19200, 'N', 8, 1);
+    m_modbusContext = modbus_new_rtu("/dev/ttyLP0", 19200, 'N', 8, 1);
     modbus_set_slave(m_modbusContext, 1);
     modbus_rtu_set_serial_mode(m_modbusContext, MODBUS_RTU_RS485);
     modbus_rtu_set_rts(m_modbusContext, MODBUS_RTU_RTS_UP);
@@ -137,7 +137,7 @@ void ModbusRegisterListModel::setModbusRegisterType(ModbusRegisterType datatype)
  */
 int ModbusRegisterListModel::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
 
     if (m_registerType == Coil || m_registerType == Input)
         return m_numRead;
@@ -175,7 +175,7 @@ QVariant ModbusRegisterListModel::data(const QModelIndex &index, int role) const
         case Coil:
         case Input:
             return m_registers[index.row()];
-            qDebug() << m_registers[index.row()];
+            //qDebug() << m_registers[index.row()];
 
         case Register: {
             if (m_outputType == Integer16) {
